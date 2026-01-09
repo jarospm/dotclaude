@@ -1,0 +1,19 @@
+# Secrets / tokens / key material
+**/*secret*
+**/*token*
+**/*.pem
+**/*.key
+
+# App caches + databases
+**/Cache/
+**/CachedData/
+**/workspaceStorage/
+**/globalStorage/*.db
+**/*.sqlite
+**/*.vscdb
+
+# macOS noise
+.DS_Store
+
+# Claude settings
+settings.local.json
