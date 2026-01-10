@@ -37,6 +37,20 @@ Keep this running in a terminal while developing.
 
 ---
 
+## When to Use This Structure
+
+**Single-repo (React at root + `/convex`)** is recommended for:
+- Single web application
+- Solo developers or small teams
+- Getting started quickly
+
+This is the official Convex quickstart pattern and works well for most projects.
+
+For multi-platform apps (web + mobile), consider the Turborepo monorepo template:
+https://www.convex.dev/templates/monorepo
+
+---
+
 ## Next.js Setup (App Router)
 
 ### Environment Variable
@@ -162,11 +176,40 @@ my-app/
 │   │   ├── api.js
 │   │   ├── dataModel.d.ts
 │   │   └── server.d.ts
+│   ├── tsconfig.json    # Convex-specific TS config (isolated)
 │   ├── schema.ts        # Database schema
 │   └── myFunctions.ts   # Your backend functions
+├── src/                 # Frontend code
 ├── .env.local           # Convex URLs (gitignored)
-└── ...
+├── .prettierignore      # Ignore generated files
+├── tsconfig.json        # Frontend TS config
+└── eslint.config.js     # Separate rules for src/ and convex/
 ```
+
+---
+
+## TypeScript Configuration
+
+Convex generates `convex/tsconfig.json` — a **separate** TypeScript project.
+This is intentional: Convex code runs in a different runtime than your frontend.
+
+### Update Scripts to Cover Both
+
+The default `typecheck` script only checks frontend code. Update `package.json`:
+
+```json
+{
+  "scripts": {
+    "typecheck": "tsc -b && tsc -p convex",
+    "build": "tsc -b && tsc -p convex && vite build"
+  }
+}
+```
+
+### Why Not Project References?
+
+Convex's tsconfig requires `noEmit: true`, which is incompatible with TypeScript
+project references (`composite: true`). Run both checks sequentially instead.
 
 ---
 
@@ -179,44 +222,103 @@ my-app/
 
 ---
 
-## ESLint Setup (Recommended)
+## ESLint Setup (React + Vite + Convex)
 
-Add Convex-specific linting rules. See `references/eslint.md` for full details.
+Frontend and backend run in **different environments** — they need separate configs.
+See `references/eslint.md` for full details on Convex-specific rules.
+
+### Install
 
 ```bash
 npm i -D @convex-dev/eslint-plugin
 ```
 
+### Complete eslint.config.js
+
 ```javascript
-// eslint.config.js
-import { defineConfig } from "eslint/config";
-import convexPlugin from "@convex-dev/eslint-plugin";
+import js from '@eslint/js';
+import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import tseslint from 'typescript-eslint';
+import convexPlugin from '@convex-dev/eslint-plugin';
+import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
-  ...convexPlugin.configs.recommended,
+  globalIgnores(['dist', 'convex/_generated']),
+
+  // Frontend: Browser environment with React
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    extends: [
+      js.configs.recommended,
+      tseslint.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
+    languageOptions: {
+      globals: globals.browser,
+    },
+  },
+
+  // Backend: Convex runtime (NOT browser)
+  {
+    files: ['convex/**/*.ts'],
+    extends: [
+      js.configs.recommended,
+      tseslint.configs.recommendedTypeChecked,
+      ...convexPlugin.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { varsIgnorePattern: '^_', argsIgnorePattern: '^_' },
+      ],
+    },
+  },
 ]);
 ```
 
-Add scripts to `package.json`:
+**Key point:** No `globals.browser` for Convex — it doesn't run in a browser.
+
+### Package.json Scripts
 
 ```json
 {
   "scripts": {
-    "lint": "eslint convex/",
-    "lint:fix": "eslint convex/ --fix"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   }
 }
+```
+
+Using `eslint .` lints the entire project; each folder gets its own rules.
+
+---
+
+## Prettier Setup
+
+Create `.prettierignore` to skip auto-generated files:
+
+```
+dist
+convex/_generated
 ```
 
 ---
 
 ## Environment Variables Summary
 
-| Framework | Variable Name | Access Pattern |
-|-----------|--------------|----------------|
-| Next.js | `NEXT_PUBLIC_CONVEX_URL` | `process.env.NEXT_PUBLIC_CONVEX_URL` |
-| Vite | `VITE_CONVEX_URL` | `import.meta.env.VITE_CONVEX_URL` |
-| Node.js | `CONVEX_URL` | `process.env.CONVEX_URL` |
+- **Next.js** — `NEXT_PUBLIC_CONVEX_URL` via `process.env.NEXT_PUBLIC_CONVEX_URL`
+- **Vite** — `VITE_CONVEX_URL` via `import.meta.env.VITE_CONVEX_URL`
+- **Node.js** — `CONVEX_URL` via `process.env.CONVEX_URL`
 
 ---
 
