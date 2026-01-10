@@ -176,7 +176,89 @@ export default defineSchema({
 });
 ```
 
-## Complete Example
+## Reusable Validators Pattern
+
+For larger projects, export validators separately for reuse across functions.
+See `references/validators.md` for full details on derivation methods.
+
+### Naming Convention
+
+Use `vXxx` prefix for exported validators (mirrors the `v.*` import):
+
+```typescript
+// convex/schema.ts
+import { defineSchema, defineTable } from "convex/server";
+import { v, Infer } from "convex/values";
+
+// =============================================================================
+// Exported Validators — Single source of truth
+// =============================================================================
+
+/** Status enum validator */
+export const vStatus = v.union(
+  v.literal("pending"),
+  v.literal("active"),
+  v.literal("completed"),
+);
+
+/** Task fields validator — wrap in v.object() to enable .pick()/.partial() */
+export const vTask = v.object({
+  title: v.string(),
+  status: vStatus,
+  assigneeId: v.optional(v.id("users")),
+  dueDate: v.optional(v.number()),
+});
+
+// =============================================================================
+// Derived Types — Use Infer<> instead of manual type definitions
+// =============================================================================
+
+export type Status = Infer<typeof vStatus>;
+export type Task = Infer<typeof vTask>;
+
+// =============================================================================
+// Schema Definition — use .fields to extract plain object from v.object()
+// =============================================================================
+
+export default defineSchema({
+  tasks: defineTable(vTask.fields)
+    .index("by_status", ["status"])
+    .index("by_assignee", ["assigneeId"]),
+});
+```
+
+### Using Validators in Functions
+
+```typescript
+// convex/tasks.ts
+import { mutation, query } from "./_generated/server";
+import { v } from "convex/values";
+import { vTask } from "./schema";
+
+export const create = mutation({
+  args: vTask.fields,  // All task fields
+  returns: v.id("tasks"),
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("tasks", args);
+  },
+});
+
+export const updateStatus = mutation({
+  args: {
+    id: v.id("tasks"),
+    ...vTask.pick("status").fields,  // Just { status }
+  },
+  returns: v.null(),
+  handler: async (ctx, { id, status }) => {
+    await ctx.db.patch(id, { status });
+    return null;
+  },
+});
+```
+
+## Complete Example (Inline)
+
+Simple approach for smaller projects:
 
 ```typescript
 import { defineSchema, defineTable } from "convex/server";

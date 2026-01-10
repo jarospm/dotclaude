@@ -68,6 +68,7 @@ File-based routing: `convex/users.ts` → `api.users.functionName`
 Consult these for detailed patterns:
 
 ### Core References
+- **`references/project-setup.md`** — Initialize new projects, add Convex to existing apps
 - **`references/validators.md`** — All validator types and usage patterns
 - **`references/schema.md`** — Schema design, indexes, search indexes
 - **`references/typescript.md`** — TypeScript types, Id<>, Doc<>, strict typing
@@ -86,6 +87,7 @@ Consult these for detailed patterns:
 ### Tools & Operations
 - **`references/cli.md`** — CLI commands for data, functions, logs, deploy
 - **`references/mcp.md`** — MCP server tools for AI agent access
+- **`references/eslint.md`** — ESLint plugin setup, rules, best practices
 
 ### External Documentation
 - **`references/docs-index.md`** — Index of all Convex docs for WebFetch fallback
@@ -114,6 +116,8 @@ v.literal("value")   // literal string
 
 ## When to Read Reference Files
 
+- **Starting a new project?** → Read `references/project-setup.md`
+- **Adding Convex to existing app?** → Read `references/project-setup.md`
 - **Writing a query?** → Read `references/queries.md`
 - **Writing a mutation?** → Read `references/mutations.md`
 - **Calling external APIs?** → Read `references/actions.md`
@@ -126,6 +130,7 @@ v.literal("value")   // literal string
 - **CLI commands?** → Read `references/cli.md`
 - **Using MCP tools?** → Read `references/mcp.md`
 - **Hitting limits?** → Read `references/limits.md`
+- **Setting up linting?** → Read `references/eslint.md`
 
 ## When Local References Don't Cover Your Use Case
 

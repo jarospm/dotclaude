@@ -252,7 +252,19 @@ Type helper functions that work with Convex data:
 
 ```typescript
 import { Doc, Id } from "./_generated/dataModel";
-import { QueryCtx, MutationCtx } from "./_generated/server";
+import {
+  QueryCtx,
+  MutationCtx,
+  ActionCtx,
+  DatabaseReader,
+  DatabaseWriter,
+} from "./_generated/server";
+import {
+  Auth,
+  StorageReader,
+  StorageWriter,
+  StorageActionWriter,
+} from "convex/server";
 
 // Helper that takes context
 async function getUserOrThrow(
@@ -303,6 +315,40 @@ await ctx.runQuery(myQuery, args);  // Don't pass function directly
 await ctx.runQuery(api.module.myQuery, args);  // Use function reference
 ```
 
+## Client-Side Type Inference
+
+### FunctionReturnType
+
+Annotate types based on function return values:
+
+```typescript
+import { FunctionReturnType } from "convex/server";
+import { api } from "../convex/_generated/api";
+
+function MyComponent(props: {
+  data: FunctionReturnType<typeof api.myFunctions.getSomething>;
+}) {
+  // props.data matches whatever getSomething returns
+}
+```
+
+### UsePaginatedQueryReturnType
+
+For paginated query results in React:
+
+```typescript
+import { UsePaginatedQueryReturnType } from "convex/react";
+import { api } from "../convex/_generated/api";
+
+function PaginatedList(props: {
+  paginatedData: UsePaginatedQueryReturnType<
+    typeof api.myFunctions.listItems
+  >;
+}) {
+  const { results, status, loadMore } = props.paginatedData;
+}
+```
+
 ## tsconfig.json for Convex
 
 ```json
@@ -323,3 +369,7 @@ await ctx.runQuery(api.module.myQuery, args);  // Use function reference
   "exclude": ["./_generated"]
 }
 ```
+
+## Required TypeScript Version
+
+Convex requires TypeScript version 5.0.3 or newer.
