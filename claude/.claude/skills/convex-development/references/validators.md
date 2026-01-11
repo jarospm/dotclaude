@@ -326,24 +326,203 @@ export const listByCourse = query({
 
 ## convex-helpers Utilities
 
-The [`convex-helpers`](https://github.com/get-convex/convex-helpers) library provides additional utilities:
+The [`convex-helpers`](https://github.com/get-convex/convex-helpers) library provides utilities for cleaner validator patterns.
+
+### Installation
+
+```bash
+npm install convex-helpers
+```
+
+### Table Utility (Recommended)
+
+The `Table()` utility is the recommended approach for defining tables. It creates a single source of truth with built-in accessors for validators:
 
 ```typescript
-import { partial } from "convex-helpers/server/validators";
-import { doc, typedV } from "convex-helpers/validators";
-import schema from "./schema";
+// convex/schema.ts
+import { defineSchema } from "convex/server";
+import { v, Infer } from "convex/values";
+import { Table } from "convex-helpers/server";
+import { literals } from "convex-helpers/validators";
 
-// Type-safe v.id() that checks table names
-export const vv = typedV(schema);
-vv.id("reciepes")  // TypeScript error: typo!
+// Enum validators using literals()
+export const vStatus = literals("draft", "published", "archived");
 
-// Full document validator including system fields
-export const gradeRecipe = mutation({
-  args: { recipe: doc(schema, "recipes") },
+// Table definition — single source of truth
+export const Articles = Table("articles", {
+  url: v.string(),
+  title: v.string(),
+  status: vStatus,
+  viewCount: v.number(),
+  updatedAt: v.number(),
+});
+
+// Derived types
+export type Article = Infer<typeof Articles.doc>;
+
+// Schema uses Table.table
+export default defineSchema({
+  articles: Articles.table
+    .index("by_url", ["url"])
+    .index("by_status", ["status"]),
+});
+```
+
+**Table provides these accessors:**
+
+| Accessor | Purpose | Example Use |
+|----------|---------|-------------|
+| `Table._id` | ID validator | `args: { id: Articles._id }` |
+| `Table.doc` | Full document with `_id`, `_creationTime` | `returns: Articles.doc` |
+| `Table.withoutSystemFields` | Fields only (for inserts) | `pick(Articles.withoutSystemFields, [...])` |
+| `Table.table` | TableDefinition for schema | `defineSchema({ articles: Articles.table })` |
+
+### Using Table Validators in Functions
+
+```typescript
+// convex/articles.ts
+import { mutation, query } from "./_generated/server";
+import { v } from "convex/values";
+import { pick } from "convex-helpers";
+import { partial } from "convex-helpers/validators";
+import { Articles, vStatus } from "./schema";
+
+// Create — pick specific fields from withoutSystemFields
+export const create = mutation({
+  args: pick(Articles.withoutSystemFields, ["url", "title", "status"]),
+  returns: Articles._id,
   handler: async (ctx, args) => {
-    console.log(args.recipe._id, args.recipe.course);
+    return await ctx.db.insert("articles", {
+      ...args,
+      viewCount: 0,
+      updatedAt: Date.now(),
+    });
   },
 });
+
+// Get — return full document
+export const get = query({
+  args: { id: Articles._id },
+  returns: v.union(Articles.doc, v.null()),
+  handler: async (ctx, { id }) => {
+    return await ctx.db.get(id);
+  },
+});
+
+// Update — partial fields (all optional)
+export const update = mutation({
+  args: {
+    id: Articles._id,
+    ...partial(pick(Articles.withoutSystemFields, ["title", "status"])),
+  },
+  returns: v.null(),
+  handler: async (ctx, { id, ...updates }) => {
+    const patch: Record<string, unknown> = { updatedAt: Date.now() };
+    for (const [key, value] of Object.entries(updates)) {
+      if (value !== undefined) patch[key] = value;
+    }
+    await ctx.db.patch(id, patch);
+    return null;
+  },
+});
+```
+
+### literals() — Concise Enum Validators
+
+Shorthand for `v.union(v.literal(...), v.literal(...))`:
+
+```typescript
+import { literals } from "convex-helpers/validators";
+
+// Instead of:
+const vStatus = v.union(
+  v.literal("draft"),
+  v.literal("published"),
+  v.literal("archived")
+);
+
+// Use:
+const vStatus = literals("draft", "published", "archived");
+```
+
+### pick() — Select Specific Fields
+
+Extract specific fields from a validator:
+
+```typescript
+import { pick } from "convex-helpers";
+
+// Pick specific fields for function args
+args: pick(Articles.withoutSystemFields, ["url", "title"])
+// Result: { url: v.string(), title: v.string() }
+```
+
+### partial() — Make Fields Optional
+
+Make all fields optional (useful for update/patch operations):
+
+```typescript
+import { partial } from "convex-helpers/validators";
+
+// All fields become optional
+args: partial(pick(Articles.withoutSystemFields, ["title", "status"]))
+// Result: { title?: v.string(), status?: v.union(...) }
+```
+
+### Combining Helpers
+
+Common pattern for update mutations:
+
+```typescript
+export const update = mutation({
+  args: {
+    id: Articles._id,
+    ...partial(pick(Articles.withoutSystemFields, [
+      "title",
+      "status",
+      "viewCount",
+    ])),
+  },
+  returns: v.null(),
+  handler: async (ctx, { id, ...updates }) => {
+    // Filter undefined values and apply patch
+  },
+});
+```
+
+### Composed Validators
+
+Create derived validators using Table accessors:
+
+```typescript
+// Insight with full article context
+const vInsightWithArticle = v.object({
+  insight: Insights.doc,
+  article: v.union(Articles.doc, v.null()),
+});
+
+export const getInsight = query({
+  args: { id: Insights._id },
+  returns: v.union(vInsightWithArticle, v.null()),
+  handler: async (ctx, { id }) => {
+    const insight = await ctx.db.get(id);
+    if (!insight) return null;
+    const article = await ctx.db.get(insight.articleId);
+    return { insight, article };
+  },
+});
+```
+
+### Alternative: typedV() for Schema-Aware IDs
+
+If not using Table, `typedV()` adds type-checking for table names:
+
+```typescript
+import { typedV } from "convex-helpers/validators";
+import schema from "./schema";
+
+const vv = typedV(schema);
+vv.id("reciepes")  // TypeScript error: typo in table name!
 ```
 
 ## Deprecated

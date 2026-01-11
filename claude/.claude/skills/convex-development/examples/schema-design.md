@@ -230,3 +230,168 @@ export const listByProject = query({
   },
 });
 ```
+
+---
+
+## Alternative: Table Utility (Recommended)
+
+The same schema using `convex-helpers` Table utility for cleaner patterns:
+
+### Schema with Table()
+
+```typescript
+// convex/schema.ts
+import { defineSchema } from "convex/server";
+import { v, Infer } from "convex/values";
+import { Table } from "convex-helpers/server";
+import { literals } from "convex-helpers/validators";
+
+// =============================================================================
+// Enums — Using literals() instead of v.union(v.literal(...), ...)
+// =============================================================================
+
+export const vPriority = literals("low", "medium", "high");
+export const vStatus = literals("todo", "in_progress", "done", "archived");
+
+// =============================================================================
+// Tables — Single source of truth with built-in accessors
+// =============================================================================
+
+export const Projects = Table("projects", {
+  name: v.string(),              // 1-3 words
+  slug: v.string(),              // URL-safe identifier
+  description: v.optional(v.string()), // 1-2 sentences
+  isArchived: v.boolean(),
+  openTaskCount: v.number(),
+  completedTaskCount: v.number(),
+  updatedAt: v.number(),
+});
+
+export const Tasks = Table("tasks", {
+  projectId: v.id("projects"),
+  priority: vPriority,
+  title: v.string(),             // single line, under 100 chars
+  notes: v.optional(v.string()), // multi-line if needed
+  dueDate: v.optional(v.number()),
+  assigneeId: v.optional(v.id("users")),
+  status: vStatus,
+  updatedAt: v.number(),
+});
+
+// =============================================================================
+// Derived Types
+// =============================================================================
+
+export type Priority = Infer<typeof vPriority>;
+export type Status = Infer<typeof vStatus>;
+export type Project = Infer<typeof Projects.doc>;
+export type Task = Infer<typeof Tasks.doc>;
+
+// =============================================================================
+// Schema Definition
+// =============================================================================
+
+export default defineSchema({
+  projects: Projects.table.index("by_slug", ["slug"]),
+
+  tasks: Tasks.table
+    .index("by_projectId", ["projectId"])
+    .index("by_status", ["status"])
+    .index("by_priority", ["priority"]),
+});
+```
+
+### Functions with Table Validators
+
+```typescript
+// convex/tasks.ts
+import { mutation, query } from "./_generated/server";
+import { v } from "convex/values";
+import { pick } from "convex-helpers";
+import { partial } from "convex-helpers/validators";
+import { Tasks, vStatus } from "./schema";
+
+// Create — pick specific fields, no manual extension needed
+export const create = mutation({
+  args: pick(Tasks.withoutSystemFields, [
+    "projectId",
+    "priority",
+    "title",
+    "notes",
+    "dueDate",
+    "assigneeId",
+  ]),
+  returns: Tasks._id,  // Built-in ID validator
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("tasks", {
+      ...args,
+      status: "todo",
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+// Update status — use enum validator directly
+export const updateStatus = mutation({
+  args: {
+    id: Tasks._id,
+    status: vStatus,
+  },
+  returns: v.null(),
+  handler: async (ctx, { id, status }) => {
+    await ctx.db.patch(id, { status, updatedAt: Date.now() });
+    return null;
+  },
+});
+
+// List by project — return full documents (no manual extension!)
+export const listByProject = query({
+  args: { projectId: v.id("projects") },
+  returns: v.array(Tasks.doc),  // Built-in doc validator
+  handler: async (ctx, { projectId }) => {
+    return await ctx.db
+      .query("tasks")
+      .withIndex("by_projectId", (q) => q.eq("projectId", projectId))
+      .collect();
+  },
+});
+
+// Update — partial fields with pick + partial combo
+export const update = mutation({
+  args: {
+    id: Tasks._id,
+    ...partial(pick(Tasks.withoutSystemFields, [
+      "title",
+      "notes",
+      "priority",
+      "dueDate",
+      "assigneeId",
+    ])),
+  },
+  returns: v.null(),
+  handler: async (ctx, { id, ...updates }) => {
+    const patch: Record<string, unknown> = { updatedAt: Date.now() };
+    for (const [key, value] of Object.entries(updates)) {
+      if (value !== undefined) patch[key] = value;
+    }
+    await ctx.db.patch(id, patch);
+    return null;
+  },
+});
+```
+
+### Key Differences from v.object() Approach
+
+| Pattern | v.object() + defineTable() | Table() utility |
+|---------|---------------------------|-----------------|
+| ID validator | `v.id("tasks")` | `Tasks._id` |
+| Full doc return | `vTask.extend({ _id: ..., _creationTime: ... })` | `Tasks.doc` |
+| Fields for insert | `vTask.fields` | `Tasks.withoutSystemFields` |
+| Table definition | `defineTable(vTask.fields)` | `Tasks.table` |
+| Enum validators | `v.union(v.literal(...), ...)` | `literals(...)` |
+
+**Benefits of Table():**
+- No manual system field extension
+- Built-in accessors for all common patterns
+- Cleaner function signatures
+- Single source of truth per table

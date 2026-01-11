@@ -115,6 +115,30 @@ v.union(v.X(), v.Y())// union type
 v.literal("value")   // literal string
 ```
 
+## convex-helpers Quick Reference
+
+The `convex-helpers` package provides utilities for cleaner validator patterns:
+
+```typescript
+// Table utility — single source of truth
+import { Table } from "convex-helpers/server";
+export const Users = Table("users", { name: v.string(), ... });
+
+// In functions:
+Users._id              // v.id("users")
+Users.doc              // full doc with _id, _creationTime
+Users.withoutSystemFields  // fields only (for pick/insert)
+Users.table            // for defineSchema()
+
+// Helpers
+import { pick } from "convex-helpers";
+import { literals, partial } from "convex-helpers/validators";
+
+literals("a", "b", "c")           // v.union(v.literal("a"), ...)
+pick(Users.withoutSystemFields, ["name", "email"])  // select fields
+partial(validator)                // make all fields optional
+```
+
 ## When to Read Reference Files
 
 - **Starting a new project?** → Read `references/project-setup.md`
@@ -124,6 +148,7 @@ v.literal("value")   // literal string
 - **Calling external APIs?** → Read `references/actions.md`
 - **Designing tables?** → Read `references/schema.md` and `examples/schema-design.md`
 - **Complex validators?** → Read `references/validators.md`
+- **convex-helpers utilities?** → Read `references/validators.md` (convex-helpers section)
 - **Background jobs?** → Read `references/scheduling.md`
 - **File uploads?** → Read `references/file-storage.md`
 - **Type issues?** → Read `references/typescript.md`

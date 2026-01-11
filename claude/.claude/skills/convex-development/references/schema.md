@@ -230,6 +230,17 @@ For larger projects, export validators separately for reuse across functions.
 See `references/validators.md` for full details on derivation methods.
 See `examples/schema-design.md` for a comprehensive real-world example.
 
+### Two Approaches
+
+**1. v.object() + defineTable() (vanilla Convex)**
+- Uses `v.object()` wrapper with `.fields`, `.pick()`, `.partial()`, `.extend()`
+- Requires manual extension for system fields in return validators
+
+**2. Table() utility (convex-helpers) — Recommended**
+- Single definition provides all accessors automatically
+- Built-in `._id`, `.doc`, `.withoutSystemFields`, `.table`
+- No manual extension needed
+
 ### Naming Convention
 
 Use `vXxx` prefix for exported validators (mirrors the `v.*` import):
@@ -303,6 +314,96 @@ export const updateStatus = mutation({
     return null;
   },
 });
+```
+
+## Table Utility Approach (Recommended)
+
+Using `convex-helpers` Table utility for single-source-of-truth definitions:
+
+```typescript
+// convex/schema.ts
+import { defineSchema } from "convex/server";
+import { v, Infer } from "convex/values";
+import { Table } from "convex-helpers/server";
+import { literals } from "convex-helpers/validators";
+
+// =============================================================================
+// Enums — Using literals() for concise union types
+// =============================================================================
+
+export const vStatus = literals("pending", "active", "completed");
+export const vPriority = literals("low", "medium", "high");
+
+// =============================================================================
+// Tables — Using Table() for single source of truth
+// =============================================================================
+
+export const Tasks = Table("tasks", {
+  title: v.string(),
+  projectId: v.id("projects"),
+  priority: vPriority,
+  status: vStatus,
+  assigneeId: v.optional(v.id("users")),
+  dueDate: v.optional(v.number()),
+  updatedAt: v.number(),
+});
+
+export const Projects = Table("projects", {
+  name: v.string(),
+  slug: v.string(),
+  isArchived: v.boolean(),
+  taskCount: v.number(),
+  updatedAt: v.number(),
+});
+
+// =============================================================================
+// Derived Types — Use Infer<typeof Table.doc>
+// =============================================================================
+
+export type Status = Infer<typeof vStatus>;
+export type Task = Infer<typeof Tasks.doc>;
+export type Project = Infer<typeof Projects.doc>;
+
+// =============================================================================
+// Schema Definition — Use Table.table
+// =============================================================================
+
+export default defineSchema({
+  tasks: Tasks.table
+    .index("by_projectId", ["projectId"])
+    .index("by_status", ["status"]),
+
+  projects: Projects.table
+    .index("by_slug", ["slug"]),
+});
+```
+
+**Table accessors:**
+
+- `Tasks._id` — `v.id("tasks")` for args
+- `Tasks.doc` — Full document validator with `_id`, `_creationTime`
+- `Tasks.withoutSystemFields` — Fields only, for `pick()` and inserts
+- `Tasks.table` — TableDefinition for `defineSchema()`
+
+**Using in functions:**
+
+```typescript
+import { pick } from "convex-helpers";
+import { partial } from "convex-helpers/validators";
+import { Tasks } from "./schema";
+
+// Create: pick fields needed from caller
+args: pick(Tasks.withoutSystemFields, ["title", "projectId", "priority"])
+
+// Get by ID
+args: { id: Tasks._id }
+returns: v.union(Tasks.doc, v.null())
+
+// Update: partial fields
+args: {
+  id: Tasks._id,
+  ...partial(pick(Tasks.withoutSystemFields, ["title", "status", "priority"]))
+}
 ```
 
 ## Complete Example (Inline)
