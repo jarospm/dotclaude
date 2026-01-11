@@ -176,10 +176,59 @@ export default defineSchema({
 });
 ```
 
+## Field Ordering Convention
+
+For consistency across validators, order fields as follows:
+
+1. **Identifiers** — `url`, `name`, `slug`, `title`
+2. **Foreign keys** — `articleId`, `categoryIds`
+3. **Classification** — `type`, `segmentIndex`
+4. **Core content** — main data fields
+5. **Optional metadata** — supplementary info
+6. **State and flags** — `status`, `isHighlight`
+7. **Denormalized counts** — `draftItemCount`, `itemCount`
+8. **Timestamps** — `updatedAt`
+9. **Embedding** — always last
+
+## Format Guidance Comments
+
+Document expected formats for text fields to ensure consistent data:
+
+```typescript
+export const vArticle = v.object({
+  title: v.string(),           // single line
+  summary: v.string(),         // 1-2 sentence TL;DR
+  keyPoints: v.array(v.string()), // 3-7 bullets, each under 100 chars
+  content: v.string(),         // 1-2 sentences, under 200 chars
+});
+```
+
+**Why:** Ensures consistent data generation (especially with AI) and predictable UI rendering.
+
+## Denormalized Counts Pattern
+
+Store counts on parent documents for efficient queries:
+
+```typescript
+export const vArticle = v.object({
+  // ... other fields
+  draftItemCount: v.number(),     // count of items with status='draft'
+  publishedItemCount: v.number(), // count of items with status='published'
+});
+```
+
+**Benefits:**
+- Fast queries without aggregation
+- Derive state from counts: `needsReview = draftItemCount > 0`
+- Display counts in lists without joins
+
+**Trade-off:** Update counts in mutations when child status changes.
+
 ## Reusable Validators Pattern
 
 For larger projects, export validators separately for reuse across functions.
 See `references/validators.md` for full details on derivation methods.
+See `examples/schema-design.md` for a comprehensive real-world example.
 
 ### Naming Convention
 

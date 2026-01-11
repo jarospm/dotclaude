@@ -93,6 +93,7 @@ Consult these for detailed patterns:
 - **`references/docs-index.md`** — Index of all Convex docs for WebFetch fallback
 
 ### Examples
+- **`examples/schema-design.md`** — Schema patterns: validators, field ordering, denormalized counts
 - **`examples/chat-app.md`** — Complete real-time chat with AI responses
 - **`examples/file-upload-react.md`** — File upload flow with React frontend
 
@@ -121,7 +122,7 @@ v.literal("value")   // literal string
 - **Writing a query?** → Read `references/queries.md`
 - **Writing a mutation?** → Read `references/mutations.md`
 - **Calling external APIs?** → Read `references/actions.md`
-- **Designing tables?** → Read `references/schema.md`
+- **Designing tables?** → Read `references/schema.md` and `examples/schema-design.md`
 - **Complex validators?** → Read `references/validators.md`
 - **Background jobs?** → Read `references/scheduling.md`
 - **File uploads?** → Read `references/file-storage.md`
