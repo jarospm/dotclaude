@@ -10,7 +10,9 @@ Scrape a URL using `firecrawl-cli` and handle the output according to user instr
 
 ## Arguments
 
-$ARGUMENTS
+User input: $ARGUMENTS
+
+If no arguments provided, ask the user for the URL to scrape.
 
 ## Instructions
 

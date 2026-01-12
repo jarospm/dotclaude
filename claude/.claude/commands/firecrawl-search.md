@@ -10,7 +10,9 @@ Search the web using Firecrawl and return results.
 
 ## Arguments
 
-$ARGUMENTS
+User input: $ARGUMENTS
+
+If no arguments provided, ask the user for the search query.
 
 ## Instructions
 

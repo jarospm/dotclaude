@@ -10,7 +10,9 @@ Use the AI-powered Firecrawl agent to browse the web and gather data based on a 
 
 ## Arguments
 
-$ARGUMENTS
+User input: $ARGUMENTS
+
+If no arguments provided, ask the user for the required prompt.
 
 ## Instructions
 
