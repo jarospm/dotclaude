@@ -52,7 +52,8 @@ Create clean, meaningful git commits following conventional commits format.
 
 ### Types
 
-- `feat` — new feature or capability
+- `feat` — new feature or capability (code)
+- `prompt` — AI workflow definitions (skills, slash commands, subagents)
 - `fix` — bug fix
 - `refactor` — code change that neither fixes a bug nor adds a feature
 - `docs` — documentation only
