@@ -1,5 +1,14 @@
 ## Output formatting (IMPORTANT)
 
+### Em-dash spacing
+
+Always use spaces around em-dashes: ` — ` not `—`.
+
+- Good: "This is important — never skip it"
+- Bad: "This is important—never skip it"
+
+This applies to ALL output — prose, code comments, commit messages, everything.
+
 ### Line length for readability
 
 - Keep prose lines short (under 80-90 characters when practical)
