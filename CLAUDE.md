@@ -11,6 +11,7 @@ Configuration files for Claude Code, deployed via GNU Stow symlinks to `~/.claud
 - `claude/.claude/CLAUDE.md` — global Claude Code instructions (symlinked to ~/.claude/)
 - `claude/.claude/settings.json` — Claude Code settings
 - `claude/.claude/commands/` — custom slash commands (.md files)
+- `claude/.claude/skills/` — reusable AI skills with reference docs
 
 ## Deployment
 
@@ -25,4 +26,10 @@ stow -R claude   # restow (remove + create)
 ## Adding New Commands
 
 - Create new .md files in claude/.claude/commands/
-- Since the commands directoryitself is symlinked, new files appear automatically without re-stowing
+- Since the commands directory itself is symlinked, new files appear automatically without re-stowing
+
+## Adding New Skills
+
+- Create a new directory in claude/.claude/skills/<skill-name>/
+- Add SKILL.md with skill definition and instructions
+- Optionally add examples/ and references/ subdirectories

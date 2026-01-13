@@ -7,17 +7,23 @@ Personal configuration for [Claude Code](https://claude.ai/code), managed with G
 - `CLAUDE.md` — global instructions for all projects
 - `settings.json` — Claude Code settings
 - `commands/` — custom slash commands
+- `skills/` — reusable AI skills with reference docs
 
 ## Structure
 
 ```
-claude-config/
+dotclaude/
 └── claude/
     └── .claude/
         ├── CLAUDE.md
         ├── settings.json
-        └── commands/
-            └── *.md
+        ├── commands/
+        │   └── *.md
+        └── skills/
+            └── <skill-name>/
+                ├── SKILL.md
+                ├── examples/
+                └── references/
 ```
 
 The nested structure mirrors `~/.claude/` so Stow can create symlinks correctly.
@@ -33,7 +39,7 @@ cd ~/dotclaude
 
 # Remove existing targets (required for directory symlinks)
 rm ~/.claude/CLAUDE.md ~/.claude/settings.json
-rm -rf ~/.claude/commands
+rm -rf ~/.claude/commands ~/.claude/skills
 
 # Deploy symlinks
 stow claude
