@@ -20,14 +20,18 @@ dotclaude/
 │       ├── commands/*.md
 │       └── skills/<name>/SKILL.md
 │
-└── plugins/                   # Plugin tracking (not symlinked)
-    ├── installed/             # Currently active plugins
-    └── icebox/                # Interesting plugins for later
+├── plugins/                   # Plugin tracking (not symlinked)
+│   ├── installed/
+│   └── icebox/
+│
+└── tools/                     # External tool docs (not symlinked)
+    ├── installed/
+    └── icebox/
 ```
 
 The `claude/` directory mirrors `~/.claude/` so Stow can create symlinks correctly.
 
-The `plugins/` directory tracks installed and potential plugins — it's not deployed, just version-controlled notes.
+The `plugins/` and `tools/` directories are version-controlled notes — not deployed.
 
 ## Setup
 

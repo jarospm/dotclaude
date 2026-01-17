@@ -16,6 +16,9 @@ Configuration files for Claude Code, deployed via GNU Stow symlinks to `~/.claud
 - `plugins/` — plugin tracking (not symlinked)
   - `installed/` — currently active plugins
   - `icebox/` — interesting plugins for later
+- `tools/` — external tool documentation (not symlinked)
+  - `installed/` — tools currently in use
+  - `icebox/` — interesting tools for later
 
 ## Deployment
 
@@ -46,3 +49,14 @@ The `plugins/` directory tracks plugins (not deployed, just notes):
 - `icebox/` — add a file for interesting plugins to try later
 
 File naming: `YYYY-MM-DD-plugin-name.md`
+
+## External Tools
+
+Some commands/skills depend on external CLI tools:
+
+- **firecrawl-cli** — `~/tools/firecrawl-cli/` — web scraping/search via Firecrawl API
+  - Used by: `firecrawl-search`, `firecrawl-scrape`, `firecrawl-agent` commands
+- **agent-browser** — browser automation for AI agents
+  - Used by: `browser-automation` skill
+
+See `tools/installed/` for setup instructions.
