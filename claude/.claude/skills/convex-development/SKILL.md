@@ -1,7 +1,6 @@
 ---
-name: Convex Development
+name: convex-development
 description: This skill MUST be used when building with Convex. Use it when writing queries, mutations, actions, schemas, validators, HTTP endpoints, or any Convex backend code. Covers function syntax, database operations, scheduling, file storage, and TypeScript patterns.
-version: 1.0.0
 ---
 
 # Convex Development Skill
