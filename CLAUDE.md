@@ -8,10 +8,14 @@ Configuration files for Claude Code, deployed via GNU Stow symlinks to `~/.claud
 
 ## Structure
 
-- `claude/.claude/CLAUDE.md` — global Claude Code instructions (symlinked to ~/.claude/)
-- `claude/.claude/settings.json` — Claude Code settings
-- `claude/.claude/commands/` — custom slash commands (.md files)
-- `claude/.claude/skills/` — reusable AI skills with reference docs
+- `claude/.claude/` — Stow package, symlinked to `~/.claude/`
+  - `CLAUDE.md` — global Claude Code instructions
+  - `settings.json` — Claude Code settings
+  - `commands/` — custom slash commands (.md files)
+  - `skills/` — reusable AI skills with reference docs
+- `plugins/` — plugin tracking (not symlinked)
+  - `installed/` — currently active plugins
+  - `icebox/` — interesting plugins for later
 
 ## Deployment
 
@@ -33,3 +37,12 @@ stow -R claude   # restow (remove + create)
 - Create a new directory in claude/.claude/skills/<skill-name>/
 - Add SKILL.md with skill definition and instructions
 - Optionally add examples/ and references/ subdirectories
+
+## Plugin Tracking
+
+The `plugins/` directory tracks plugins (not deployed, just notes):
+
+- `installed/` — add a file when installing a plugin
+- `icebox/` — add a file for interesting plugins to try later
+
+File naming: `YYYY-MM-DD-plugin-name.md`

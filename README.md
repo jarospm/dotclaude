@@ -13,20 +13,21 @@ Personal configuration for [Claude Code](https://claude.ai/code), managed with G
 
 ```
 dotclaude/
-└── claude/
-    └── .claude/
-        ├── CLAUDE.md
-        ├── settings.json
-        ├── commands/
-        │   └── *.md
-        └── skills/
-            └── <skill-name>/
-                ├── SKILL.md
-                ├── examples/
-                └── references/
+├── claude/                    # Stow package (symlinked to ~/)
+│   └── .claude/
+│       ├── CLAUDE.md
+│       ├── settings.json
+│       ├── commands/*.md
+│       └── skills/<name>/SKILL.md
+│
+└── plugins/                   # Plugin tracking (not symlinked)
+    ├── installed/             # Currently active plugins
+    └── icebox/                # Interesting plugins for later
 ```
 
-The nested structure mirrors `~/.claude/` so Stow can create symlinks correctly.
+The `claude/` directory mirrors `~/.claude/` so Stow can create symlinks correctly.
+
+The `plugins/` directory tracks installed and potential plugins — it's not deployed, just version-controlled notes.
 
 ## Setup
 
