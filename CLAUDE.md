@@ -13,6 +13,7 @@ Configuration files for Claude Code, deployed via GNU Stow symlinks to `~/.claud
   - `settings.json` — Claude Code settings
   - `commands/` — custom slash commands (.md files)
   - `skills/` — reusable AI skills with reference docs
+  - `agents/` — specialized subagents (.md files)
 - `plugins/` — plugin tracking (not symlinked)
   - `installed/` — currently active plugins
   - `icebox/` — interesting plugins for later
@@ -40,6 +41,12 @@ stow -R claude   # restow (remove + create)
 - Create a new directory in claude/.claude/skills/<skill-name>/
 - Add SKILL.md with skill definition and instructions
 - Optionally add examples/ and references/ subdirectories
+
+## Adding New Agents
+
+- Create new .md files in claude/.claude/agents/
+- Include frontmatter with `name`, `description`, `tools`, and `model`
+- Agents run in isolated contexts and can be invoked by commands or directly
 
 ## Plugin Tracking
 

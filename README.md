@@ -8,6 +8,7 @@ Personal configuration for [Claude Code](https://claude.ai/code), managed with G
 - `settings.json` — Claude Code settings
 - `commands/` — custom slash commands
 - `skills/` — reusable AI skills with reference docs
+- `agents/` — specialized subagents for complex tasks
 
 ## Structure
 
@@ -18,7 +19,8 @@ dotclaude/
 │       ├── CLAUDE.md
 │       ├── settings.json
 │       ├── commands/*.md
-│       └── skills/<name>/SKILL.md
+│       ├── skills/<name>/SKILL.md
+│       └── agents/*.md
 │
 ├── plugins/                   # Plugin tracking (not symlinked)
 │   ├── installed/
@@ -44,7 +46,7 @@ cd ~/dotclaude
 
 # Remove existing targets (required for directory symlinks)
 rm ~/.claude/CLAUDE.md ~/.claude/settings.json
-rm -rf ~/.claude/commands ~/.claude/skills
+rm -rf ~/.claude/commands ~/.claude/skills ~/.claude/agents
 
 # Deploy symlinks
 stow claude
@@ -64,3 +66,7 @@ stow -n -v <package>  # dry run (preview changes)
 ## References
 
 - [Using GNU Stow to Manage Your Dotfiles](https://brandon.invergo.net/news/2012-05-26-using-gnu-stow-to-manage-your-dotfiles.html)
+
+## Acknowledgments
+
+- Code review agents (`code-simplifier`, `typescript-reviewer`) and `/code-review` command adapted from the [Compound Engineering Plugin](https://github.com/EveryInc/compound-engineering-plugin) by Every.
