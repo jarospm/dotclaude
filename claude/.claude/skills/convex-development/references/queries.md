@@ -20,7 +20,7 @@ export const getUser = query({
     v.null()
   ),
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.userId);
+    return await ctx.db.get("users", args.userId);
   },
 });
 ```
@@ -45,7 +45,7 @@ export const getPrivateData = internalQuery({
 ### Get by ID
 
 ```typescript
-const user = await ctx.db.get(userId);  // returns doc or null
+const user = await ctx.db.get("users", userId);  // returns doc or null
 ```
 
 ### Query with Index

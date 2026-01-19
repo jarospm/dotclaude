@@ -54,7 +54,7 @@ const docId = await ctx.db.insert("tableName", {
 Updates specific fields, keeps others unchanged:
 
 ```typescript
-await ctx.db.patch(documentId, {
+await ctx.db.patch("users", documentId, {
   status: "active",
   updatedAt: Date.now(),
 });
@@ -68,7 +68,7 @@ await ctx.db.patch(documentId, {
 Replaces entire document (except system fields):
 
 ```typescript
-await ctx.db.replace(documentId, {
+await ctx.db.replace("users", documentId, {
   name: "New Name",
   email: "new@email.com",
   // Must include ALL fields
@@ -80,7 +80,7 @@ await ctx.db.replace(documentId, {
 ### Delete
 
 ```typescript
-await ctx.db.delete(documentId);
+await ctx.db.delete("users", documentId);
 ```
 
 **To delete multiple documents:**
@@ -92,7 +92,7 @@ const messages = await ctx.db
   .collect();
 
 for (const message of messages) {
-  await ctx.db.delete(message._id);
+  await ctx.db.delete("messages", message._id);
 }
 ```
 
@@ -114,15 +114,15 @@ export const transferFunds = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const from = await ctx.db.get(args.fromId);
-    const to = await ctx.db.get(args.toId);
+    const from = await ctx.db.get("accounts", args.fromId);
+    const to = await ctx.db.get("accounts", args.toId);
 
     if (!from || !to) throw new Error("Account not found");
     if (from.balance < args.amount) throw new Error("Insufficient funds");
 
     // Both updates succeed or both fail
-    await ctx.db.patch(args.fromId, { balance: from.balance - args.amount });
-    await ctx.db.patch(args.toId, { balance: to.balance + args.amount });
+    await ctx.db.patch("accounts", args.fromId, { balance: from.balance - args.amount });
+    await ctx.db.patch("accounts", args.toId, { balance: to.balance + args.amount });
 
     return null;
   },
@@ -142,7 +142,7 @@ export const sendMessage = mutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     // Validate channel exists
-    const channel = await ctx.db.get(args.channelId);
+    const channel = await ctx.db.get("channels", args.channelId);
     if (!channel) throw new Error("Channel not found");
 
     await ctx.db.insert("messages", {
@@ -217,10 +217,10 @@ export const sendMessage = mutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     // Validate entities exist
-    const channel = await ctx.db.get(args.channelId);
+    const channel = await ctx.db.get("channels", args.channelId);
     if (!channel) throw new Error("Channel not found");
 
-    const user = await ctx.db.get(args.authorId);
+    const user = await ctx.db.get("users", args.authorId);
     if (!user) throw new Error("User not found");
 
     // Insert message

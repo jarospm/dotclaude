@@ -128,7 +128,7 @@ export const getUsernames = query({
     const idToUsername: Record<Id<"users">, string> = {};
 
     for (const userId of args.userIds) {
-      const user = await ctx.db.get(userId);
+      const user = await ctx.db.get("users", userId);
       if (user) {
         idToUsername[userId] = user.name;
       }
@@ -216,7 +216,7 @@ export const maybeGetUser = query({
     v.null()
   ),
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.userId);  // returns Doc | null
+    return await ctx.db.get("users", args.userId);  // returns Doc | null
   },
 });
 ```
@@ -271,7 +271,7 @@ async function getUserOrThrow(
   ctx: QueryCtx | MutationCtx,
   userId: Id<"users">
 ): Promise<Doc<"users">> {
-  const user = await ctx.db.get(userId);
+  const user = await ctx.db.get("users", userId);
   if (!user) throw new Error("User not found");
   return user;
 }
@@ -297,11 +297,11 @@ function formatMessage(message: Doc<"messages">): {
 ```typescript
 // Wrong: string literal
 const userId = "abc123";
-await ctx.db.get(userId);  // Error!
+await ctx.db.get("users", userId);  // Error!
 
 // Right: properly typed ID from args or db
 const userId = args.userId;  // Already Id<"users"> from validator
-await ctx.db.get(userId);    // Works
+await ctx.db.get("users", userId);    // Works
 ```
 
 ### "Argument of type '...' is not assignable to parameter"

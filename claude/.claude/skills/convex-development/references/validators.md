@@ -267,7 +267,7 @@ export const update = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    await ctx.db.patch(args.id, args.patch);
+    await ctx.db.patch("recipes", args.id, args.patch);
     return null;
   },
 });
@@ -405,7 +405,7 @@ export const get = query({
   args: { id: Articles._id },
   returns: v.union(Articles.doc, v.null()),
   handler: async (ctx, { id }) => {
-    return await ctx.db.get(id);
+    return await ctx.db.get("articles", id);
   },
 });
 
@@ -421,7 +421,7 @@ export const update = mutation({
     for (const [key, value] of Object.entries(updates)) {
       if (value !== undefined) patch[key] = value;
     }
-    await ctx.db.patch(id, patch);
+    await ctx.db.patch("articles", id, patch);
     return null;
   },
 });
@@ -505,9 +505,9 @@ export const getInsight = query({
   args: { id: Insights._id },
   returns: v.union(vInsightWithArticle, v.null()),
   handler: async (ctx, { id }) => {
-    const insight = await ctx.db.get(id);
+    const insight = await ctx.db.get("insights", id);
     if (!insight) return null;
-    const article = await ctx.db.get(insight.articleId);
+    const article = await ctx.db.get("articles", insight.articleId);
     return { insight, article };
   },
 });

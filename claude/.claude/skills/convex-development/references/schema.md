@@ -310,7 +310,7 @@ export const updateStatus = mutation({
   },
   returns: v.null(),
   handler: async (ctx, { id, status }) => {
-    await ctx.db.patch(id, { status });
+    await ctx.db.patch("tasks", id, { status });
     return null;
   },
 });

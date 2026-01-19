@@ -209,7 +209,7 @@ export const updateStatus = mutation({
   },
   returns: v.null(),
   handler: async (ctx, { id, status }) => {
-    await ctx.db.patch(id, { status, updatedAt: Date.now() });
+    await ctx.db.patch("tasks", id, { status, updatedAt: Date.now() });
     return null;
   },
 });
@@ -339,7 +339,7 @@ export const updateStatus = mutation({
   },
   returns: v.null(),
   handler: async (ctx, { id, status }) => {
-    await ctx.db.patch(id, { status, updatedAt: Date.now() });
+    await ctx.db.patch("tasks", id, { status, updatedAt: Date.now() });
     return null;
   },
 });
@@ -374,7 +374,7 @@ export const update = mutation({
     for (const [key, value] of Object.entries(updates)) {
       if (value !== undefined) patch[key] = value;
     }
-    await ctx.db.patch(id, patch);
+    await ctx.db.patch("tasks", id, patch);
     return null;
   },
 });

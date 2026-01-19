@@ -67,7 +67,7 @@ export const assignRole = mutation({
   args: { userId: v.id("users"), role: v.string() },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const user = await ctx.db.get(args.userId);
+    const user = await ctx.db.get("users", args.userId);
     if (!user) {
       throw new ConvexError({ code: "NOT_FOUND", message: "User not found" });
     }
@@ -79,7 +79,7 @@ export const assignRole = mutation({
       });
     }
 
-    await ctx.db.patch(args.userId, { role: args.role });
+    await ctx.db.patch("users", args.userId, { role: args.role });
     return null;
   },
 });

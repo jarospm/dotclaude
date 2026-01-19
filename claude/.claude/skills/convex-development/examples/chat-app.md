@@ -90,11 +90,11 @@ export const sendMessage = mutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     // Validate channel exists
-    const channel = await ctx.db.get(args.channelId);
+    const channel = await ctx.db.get("channels", args.channelId);
     if (!channel) throw new Error("Channel not found");
 
     // Validate user exists
-    const user = await ctx.db.get(args.authorId);
+    const user = await ctx.db.get("users", args.authorId);
     if (!user) throw new Error("User not found");
 
     // Insert message
@@ -176,7 +176,7 @@ export const loadContext = internalQuery({
     })
   ),
   handler: async (ctx, args) => {
-    const channel = await ctx.db.get(args.channelId);
+    const channel = await ctx.db.get("channels", args.channelId);
     if (!channel) throw new Error("Channel not found");
 
     const messages = await ctx.db
@@ -188,7 +188,7 @@ export const loadContext = internalQuery({
     const result = [];
     for (const message of messages) {
       if (message.authorId) {
-        const user = await ctx.db.get(message.authorId);
+        const user = await ctx.db.get("users", message.authorId);
         if (!user) throw new Error("User not found");
         result.push({
           role: "user" as const,
