@@ -1,14 +1,21 @@
-# Claude Code Config
+# Claude Code Workspace
 
-Personal configuration for [Claude Code](https://claude.ai/code), managed with GNU Stow.
+Personal configuration and knowledge base for [Claude Code](https://claude.ai/code).
 
-## What's Synced
+## What's Here
 
+**Deployed (via GNU Stow):**
 - `CLAUDE.md` — global instructions for all projects
 - `settings.json` — Claude Code settings
 - `commands/` — custom slash commands
 - `skills/` — reusable AI skills with reference docs
 - `agents/` — specialized subagents for complex tasks
+
+**Tracked (version-controlled notes):**
+- `plugins/` — MCP servers and extensions
+- `tools/` — external CLI tools
+- `systems/` — methodologies and frameworks
+- `references/` — bookmarks, directories, articles
 
 ## Structure
 
@@ -26,14 +33,21 @@ dotclaude/
 │   ├── installed/
 │   └── icebox/
 │
-└── tools/                     # External tool docs (not symlinked)
-    ├── installed/
-    └── icebox/
+├── tools/                     # External tool docs (not symlinked)
+│   ├── installed/
+│   └── icebox/
+│
+├── systems/                   # Methodologies/frameworks (not symlinked)
+│   ├── installed/
+│   └── icebox/
+│
+└── references/                # Bookmarks, directories, articles (not symlinked)
+    └── *.md                   # Flat structure with frontmatter tags
 ```
 
 The `claude/` directory mirrors `~/.claude/` so Stow can create symlinks correctly.
 
-The `plugins/` and `tools/` directories are version-controlled notes — not deployed.
+The `plugins/`, `tools/`, `systems/`, and `references/` directories are version-controlled notes — not deployed.
 
 ## Setup
 

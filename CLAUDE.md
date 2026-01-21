@@ -20,6 +20,11 @@ Configuration files for Claude Code, deployed via GNU Stow symlinks to `~/.claud
 - `tools/` — external tool documentation (not symlinked)
   - `installed/` — tools currently in use
   - `icebox/` — interesting tools for later
+- `systems/` — opinionated systems/methodologies (not symlinked)
+  - `installed/` — systems actively in use
+  - `icebox/` — interesting systems for later
+- `references/` — bookmarks, directories, articles (not symlinked)
+  - Flat structure with frontmatter tags for filtering
 
 ## Deployment
 
@@ -67,3 +72,32 @@ Some commands/skills depend on external CLI tools:
   - Used by: `browser-automation` skill
 
 See `tools/installed/` for setup instructions.
+
+## Systems Tracking
+
+The `systems/` directory tracks opinionated systems and methodologies — frameworks that shape how you work with AI agents, not just individual tools or plugins.
+
+- `installed/` — systems actively integrated into workflow
+- `icebox/` — interesting systems to evaluate later
+
+File naming: `YYYY-MM-DD-system-name.md`
+
+Examples: agent-os, cursor-rules collections, prompt engineering frameworks.
+
+## References
+
+The `references/` directory stores bookmarks to external resources — directories, articles, tools, discussions. Flat structure optimized for search.
+
+File naming: `YYYY-MM-DD-short-name.md`
+
+**Frontmatter schema:**
+```yaml
+---
+title: Human-readable name
+url: https://example.com/
+type: directory | article | discussion | tool | tutorial
+tags: [searchable, keywords, here]
+---
+```
+
+Include a `Keywords` section in the body with search terms you might use later.
