@@ -9,5 +9,19 @@
     "frontend-design@claude-plugins-official": true,
     "library-docs@sawyer-mart": true
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "permissions": {
+    "allow": [
+      "Edit",
+      "Write",
+      "WebSearch",
+      "WebFetch",
+      "Bash(mkdir:*)",
+      "Bash(agent-browser *)",
+      "Skill(smart-commit)",
+      "Skill(browser-automation)",
+      "Skill(firecrawl)"
+    ],
+    "defaultMode": "acceptEdits"
+  }
 }
