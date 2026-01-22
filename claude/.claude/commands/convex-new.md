@@ -437,7 +437,7 @@ Minimal names — file provides context:
 - Update/patch → `returns: v.null()` (success is implicit)
 - Get → `returns: v.union(Tasks.doc, v.null())`
 - List → `returns: v.array(Tasks.doc)`
-```
+````
 
 ### CLAUDE.md (project root)
 
@@ -461,7 +461,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 npm run typecheck && npm run lint && npm run format
-```
 ```
 
 ## Architecture
@@ -521,6 +520,7 @@ import { Tasks, vStatus } from "./schema";
 - `returns: v.null()` for update/patch operations
 - `returns: Table._id` for create operations
 - Always include `updatedAt: Date.now()` in mutations that modify data
+````
 
 ---
 
