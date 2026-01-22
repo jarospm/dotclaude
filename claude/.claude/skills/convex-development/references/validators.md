@@ -370,12 +370,12 @@ export default defineSchema({
 
 **Table provides these accessors:**
 
-| Accessor | Purpose | Example Use |
-|----------|---------|-------------|
-| `Table._id` | ID validator | `args: { id: Articles._id }` |
-| `Table.doc` | Full document with `_id`, `_creationTime` | `returns: Articles.doc` |
-| `Table.withoutSystemFields` | Fields only (for inserts) | `pick(Articles.withoutSystemFields, [...])` |
-| `Table.table` | TableDefinition for schema | `defineSchema({ articles: Articles.table })` |
+- `Table._id` — ID validator for this table
+- `Table.doc` — full document validator (v.object with all fields + system fields)
+- `Table.withoutSystemFields` — user fields only (for inserts, args)
+- `Table.withSystemFields` — user fields + `_id` and `_creationTime`
+- `Table.systemFields` — just `_id` and `_creationTime`
+- `Table.table` — TableDefinition for `defineSchema()`
 
 ### Using Table Validators in Functions
 
