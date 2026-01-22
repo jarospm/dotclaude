@@ -396,9 +396,6 @@ Using `Table()` utility from `convex-helpers/server`:
 ```typescript
 export const Tasks = Table("tasks", { ...fields });
 ```
-````
-
-````
 
 Provides accessors:
 
@@ -440,8 +437,7 @@ Minimal names — file provides context:
 - Update/patch → `returns: v.null()` (success is implicit)
 - Get → `returns: v.union(Tasks.doc, v.null())`
 - List → `returns: v.array(Tasks.doc)`
-
-````
+```
 
 ### CLAUDE.md (project root)
 
@@ -466,7 +462,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 npm run typecheck && npm run lint && npm run format
 ```
-````
+```
 
 ## Architecture
 
