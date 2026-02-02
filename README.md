@@ -15,7 +15,7 @@ Personal configuration and knowledge base for [Claude Code](https://claude.ai/co
 - `plugins/` — MCP servers and extensions
 - `tools/` — external CLI tools
 - `systems/` — methodologies and frameworks
-- `references/` — bookmarks, directories, articles
+- `inbox/` — discovered resources to evaluate
 
 ## Structure
 
@@ -35,13 +35,14 @@ dotclaude/
 │
 ├── tools/                     # External tool docs (not symlinked)
 │   ├── installed/
-│   └── icebox/
+│   ├── icebox/
+│   └── ecosystems/
 │
 ├── systems/                   # Methodologies/frameworks (not symlinked)
 │   ├── installed/
 │   └── icebox/
 │
-└── references/                # Bookmarks, directories, articles (not symlinked)
+└── inbox/                     # Discovered resources to evaluate (not symlinked)
     └── *.md                   # Flat structure with frontmatter tags
 ```
 

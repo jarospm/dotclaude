@@ -20,10 +20,11 @@ Configuration files for Claude Code, deployed via GNU Stow symlinks to `~/.claud
 - `tools/` — external tool documentation (not symlinked)
   - `installed/` — tools currently in use
   - `icebox/` — interesting tools for later
+  - `ecosystems/` — npx-based tooling and ecosystem knowledge
 - `systems/` — opinionated systems/methodologies (not symlinked)
   - `installed/` — systems actively in use
   - `icebox/` — interesting systems for later
-- `references/` — bookmarks, directories, articles (not symlinked)
+- `inbox/` — discovered resources to evaluate (not symlinked)
   - Flat structure with frontmatter tags for filtering
 
 ## Deployment
@@ -84,9 +85,9 @@ File naming: `YYYY-MM-DD-system-name.md`
 
 Examples: agent-os, cursor-rules collections, prompt engineering frameworks.
 
-## References
+## Inbox
 
-The `references/` directory stores bookmarks to external resources — directories, articles, tools, discussions. Flat structure optimized for search.
+The `inbox/` directory is a landing zone for discovered resources — things to evaluate, try later, or promote to other folders once adopted.
 
 File naming: `YYYY-MM-DD-short-name.md`
 
@@ -101,3 +102,5 @@ tags: [searchable, keywords, here]
 ```
 
 Include a `Keywords` section in the body with search terms you might use later.
+
+When a resource is adopted, move it to the appropriate folder (tools/installed, plugins/installed, etc.) and create proper documentation.
