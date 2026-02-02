@@ -21,6 +21,7 @@ Configuration files for Claude Code, deployed via GNU Stow symlinks to `~/.claud
   - `installed/` — tools currently in use
   - `icebox/` — interesting tools for later
   - `ecosystems/` — npx-based tooling and ecosystem knowledge
+  - `archive/` — deprecated or replaced tool docs
 - `systems/` — opinionated systems/methodologies (not symlinked)
   - `installed/` — systems actively in use
   - `icebox/` — interesting systems for later

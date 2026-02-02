@@ -36,7 +36,8 @@ dotclaude/
 ├── tools/                     # External tool docs (not symlinked)
 │   ├── installed/
 │   ├── icebox/
-│   └── ecosystems/
+│   ├── ecosystems/
+│   └── archive/
 │
 ├── systems/                   # Methodologies/frameworks (not symlinked)
 │   ├── installed/
