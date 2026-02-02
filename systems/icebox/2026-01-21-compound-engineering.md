@@ -19,6 +19,16 @@ Four-command cycle:
 - Capture knowledge so it becomes reusable infrastructure
 - Each project should make the next one easier
 
+## Plugin Contents
+
+**Skills:**
+- `agent-browser` — browser automation skill (not to be confused with [Vercel's agent-browser CLI](../../tools/installed/2026-01-17-agent-browser.md))
+
+**Agents:**
+- `agent-native-reviewer` — reviews code for "agent-native" architecture
+  - Validates action parity, context parity, shared workspace
+  - Based on [agent-native philosophy](https://every.to/guides/agent-native)
+
 ## Integration
 
 - Installed via Claude Code plugin system
