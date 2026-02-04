@@ -40,6 +40,45 @@ Autonomous AI agent loop that runs coding tools (Claude Code, Amp) repeatedly un
 - Stories too large for one context window
 - Running silently instead of observing
 
+## Implementation Variants
+
+Three main implementations exist, each building on the previous:
+
+### Geoffrey Huntley (Original Concept)
+
+The philosophy, not a specific tool. Key ideas:
+
+- **Monolithic by design** — single repo, single process, one task per loop
+- **"Clay on the pottery wheel"** — when something fails, return to the loop
+- Manual prompting or automation with strategic pauses (Ctrl+C between tasks)
+- Emphasis on watching the loop to identify failure domains
+- Context engineering over conversation persistence
+
+### Ryan Carson's Ralph (snarktank/ralph)
+
+First practical implementation of Huntley's concept:
+
+- **Fresh context per iteration** — spawns new AI instance each cycle
+- **Memory through files** — git commits, progress.txt, prd.json, learnings file
+- **Single-agent execution** — one task at a time, sequential
+- **Quality gates** — typecheck/tests run between iterations
+- **AGENTS.md integration** — accumulates learnings for future iterations
+- Supports Amp CLI and Claude Code
+
+### Michael Shimeles's Ralphy
+
+Evolution adding parallel coordination and broader tooling:
+
+- **Parallel execution** — run 3+ agents simultaneously with isolated worktrees
+- **AI-assisted merge resolution** — auto-resolves conflicts when branches merge
+- **Many AI engines** — Claude Code, OpenCode, Cursor, Codex, Qwen-Code, Factory Droid, GitHub Copilot, Gemini CLI
+- **Browser automation** — agent-browser integration for UI verification
+- **Rich task sources** — Markdown, YAML/JSON, folders, GitHub issues
+- **Webhooks/notifications** — Discord, Slack integration
+- **Project config** — `.ralphy/config.yaml` for rules, boundaries, test commands
+
+**Key difference**: Carson's Ralph is sequential single-agent; Shimeles's Ralphy adds parallel multi-agent orchestration with conflict resolution.
+
 ## Related Systems
 
 Ralph is the execution layer in a larger stack:
@@ -54,4 +93,5 @@ See Ryan Carson's synthesis: [How to make your agent learn and ship while you sl
 
 - Original concept: https://ghuntley.com/loop/
 - Ryan Carson's repo: https://github.com/snarktank/ralph
+- Michael Shimeles's Ralphy: https://github.com/michaelshimeles/ralphy
 - Deep dive: https://thetrav.substack.com/p/the-real-ralph-wiggum-loop-what-everyone
