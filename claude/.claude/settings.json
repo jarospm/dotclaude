@@ -24,5 +24,18 @@
     "library-docs@sawyer-mart": true,
     "playwright@claude-plugins-official": true
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true,
+    "network": {
+      "allowedDomains": [
+        "*.convex.cloud",
+        "*.convex.dev",
+        "*.npmjs.org",
+        "registry.npmjs.org",
+        "github.com"
+      ]
+    }
+  }
 }
