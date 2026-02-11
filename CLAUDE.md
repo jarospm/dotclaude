@@ -17,6 +17,7 @@ Configuration files for Claude Code, deployed via GNU Stow symlinks to `~/.claud
 - `plugins/` — plugin tracking (not symlinked)
   - `installed/` — currently active plugins
   - `icebox/` — interesting plugins for later
+  - `archive/` — previously used plugins, consciously disabled
 - `tools/` — external tool documentation (not symlinked)
   - `installed/` — tools currently in use
   - `icebox/` — interesting tools for later
@@ -60,6 +61,7 @@ The `plugins/` directory tracks plugins (not deployed, just notes):
 
 - `installed/` — add a file when installing a plugin
 - `icebox/` — add a file for interesting plugins to try later
+- `archive/` — move here when disabling a previously used plugin
 
 File naming: `YYYY-MM-DD-plugin-name.md`
 
