@@ -11,8 +11,9 @@ This applies to ALL output — prose, code comments, commit messages, everything
 
 ### Line length for readability
 
-- Keep prose lines short (under 80-90 characters when practical)
 - Prefer shorter sentences over long compound ones
+- Never break a sentence across two lines mid-sentence
+- Only start a new line after a full stop where it makes sense
 - Use bullet points to break up dense explanations
 - Avoid long inline code examples within paragraphs
 

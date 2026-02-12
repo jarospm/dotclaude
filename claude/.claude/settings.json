@@ -21,10 +21,8 @@
     "elements-of-style@superpowers-marketplace": true,
     "context7@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true,
-    "library-docs@sawyer-mart": true,
-    "playwright@claude-plugins-official": true
+    "library-docs@sawyer-mart": true
   },
-  "alwaysThinkingEnabled": true,
   "sandbox": {
     "enabled": true,
     "autoAllowBashIfSandboxed": true,
@@ -37,5 +35,6 @@
         "github.com"
       ]
     }
-  }
+  },
+  "alwaysThinkingEnabled": true
 }
