@@ -21,7 +21,8 @@
     "elements-of-style@superpowers-marketplace": true,
     "context7@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true,
-    "library-docs@sawyer-mart": true
+    "library-docs@sawyer-mart": true,
+    "compound-engineering@every-marketplace": true
   },
   "sandbox": {
     "enabled": true,
@@ -36,5 +37,6 @@
       ]
     }
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "skipDangerousModePermissionPrompt": true
 }
