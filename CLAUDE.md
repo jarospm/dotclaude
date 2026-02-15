@@ -14,6 +14,8 @@ Configuration files for Claude Code, deployed via GNU Stow symlinks to `~/.claud
   - `commands/` — custom slash commands (.md files)
   - `skills/` — reusable AI skills with reference docs
   - `agents/` — specialized subagents (.md files)
+- `skills/` — community skill tracking (not symlinked)
+  - `installed/` — skills installed via `npx skills`
 - `plugins/` — plugin tracking (not symlinked)
   - `installed/` — currently active plugins
   - `icebox/` — interesting plugins for later
@@ -33,27 +35,47 @@ Configuration files for Claude Code, deployed via GNU Stow symlinks to `~/.claud
 From repo root:
 
 ```bash
-stow claude      # create symlinks
-stow -D claude   # remove symlinks
-stow -R claude   # restow (remove + create)
+stow --no-folding claude      # create symlinks
+stow -D claude                # remove symlinks
+stow -R --no-folding claude   # restow (remove + create)
 ```
+
+**Why `--no-folding`?** Without it, Stow creates folder symlinks (e.g. `~/.claude/skills/` → repo dir). With `--no-folding`, Stow creates real directories and symlinks individual files. This lets `npx skills` add agent skills alongside custom skills in `~/.claude/skills/`.
 
 ## Adding New Commands
 
-- Create new .md files in claude/.claude/commands/
-- Since the commands directory itself is symlinked, new files appear automatically without re-stowing
+- Create new .md files in `claude/.claude/commands/`
+- Run `stow -R --no-folding claude` to pick up changes
 
 ## Adding New Skills
 
-- Create a new directory in claude/.claude/skills/<skill-name>/
+Custom skills (this repo):
+
+- Create a new directory in `claude/.claude/skills/<skill-name>/`
 - Add SKILL.md with skill definition and instructions
-- Optionally add examples/ and references/ subdirectories
+- Optionally add `examples/` and `references/` subdirectories
+- Run `stow -R --no-folding claude` to pick up changes
+
+Community skills (via `npx skills`):
+
+- `~/.agents/skills/` is the shared source of truth across all agents
+- `npx skills` creates symlinks from `~/.claude/skills/` → `~/.agents/skills/`
+- Always scope to specific agents with repeated `-a` flags:
+  ```bash
+  npx skills add vercel-labs/agent-skills -g -a claude-code -a codex -s <skill-name>
+  ```
+- Source argument must come right after `add`, before flags
+- Use `npx skills list -g` to see all installed skills
+- Use `npx skills check` / `npx skills update` to update
+- Track installed skills in `skills/installed/` with date-prefixed pages
+- See `tools/ecosystems/vercel-skills-cli.md` for full CLI reference
 
 ## Adding New Agents
 
-- Create new .md files in claude/.claude/agents/
+- Create new .md files in `claude/.claude/agents/`
 - Include frontmatter with `name`, `description`, `tools`, and `model`
 - Agents run in isolated contexts and can be invoked by commands or directly
+- Run `stow -R --no-folding claude` to pick up changes
 
 ## Plugin Tracking
 

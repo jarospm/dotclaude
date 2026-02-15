@@ -9,86 +9,97 @@ The open agent skills ecosystem — "npm for AI agents."
 
 ## What It Is
 
-A CLI tool (`npx skills`) for installing, managing, and updating reusable AI agent skills. Supports 39+ agents including Claude Code, Cursor, Copilot, Codex, and others.
+A CLI tool (`npx skills`) for installing, managing, and updating reusable AI agent skills. Supports 39+ agents including Claude Code, Codex, Cursor, Copilot, and others.
 
 Skills are `SKILL.md` files with YAML frontmatter that extend agent capabilities.
+
+## Architecture
+
+```
+~/.agents/skills/              # shared source of truth
+  find-skills/
+  vercel-react-best-practices/
+  web-design-guidelines/
+
+~/.claude/skills/              # Claude Code (real dir via --no-folding)
+  convex-development/          # Stow-managed (custom skill)
+  firecrawl/                   # Stow-managed (custom skill)
+  find-skills → ../../.agents  # npx skills-managed (symlink)
+  vercel-react-best-practices → ../../.agents  # npx skills-managed
+
+~/.codex/skills/               # Codex (universal integration)
+  find-skills → ../../.agents
+```
+
+Two types of skills coexist in `~/.claude/skills/`:
+
+- **Custom skills** — real directories managed by Stow from `dotclaude/claude/.claude/skills/`
+- **Community skills** — symlinks to `~/.agents/skills/` managed by `npx skills`
 
 ## Key Commands
 
 ```bash
-npx skills add <owner/repo>          # Install skill from GitHub
-npx skills add <owner/repo> -g       # Install globally (~/.claude/skills/)
-npx skills add <owner/repo> --list   # List available skills in repo
-npx skills remove <skill-name>       # Remove a skill
-npx skills list                      # List installed skills
-npx skills list -g                   # List global skills
-npx skills check                     # Check for updates
-npx skills update                    # Update all skills
-npx skills find <query>              # Search for skills
+npx skills add <owner/repo>          # install skill from GitHub
+npx skills add <owner/repo> -g       # install globally
+npx skills add <owner/repo> --list   # list available skills in repo
+npx skills remove <skill-name>       # remove a skill
+npx skills list                      # list installed skills
+npx skills list -g                   # list global skills
+npx skills check                     # check for updates
+npx skills update                    # update all skills
+npx skills find <query>              # search for skills
 ```
 
 ## Key Flags
 
+- `-a, --agent <agents...>` — target specific agents (repeat flag per agent)
+- `-s, --skill <skills...>` — install specific skills by name
+- `-g, --global` — install to global location
+- `-y, --yes` — skip confirmation prompts
+- `--copy` — copy files instead of symlinking
+- `--list` — list available skills in a repo before installing
+
+## Installing Skills
+
+Always scope to specific agents with `-a` to avoid cluttering 30+ agent directories:
+
 ```bash
--a, --agent <agents...>    # Target specific agents (claude-code, codex, cursor, etc.)
--s, --skill <skills...>    # Install specific skills by name (use '*' for all)
--g, --global               # Install to global location (~/.claude/skills/)
---copy                     # Copy files instead of symlinking
---list                     # List available skills in a repo before installing
+# Install a specific skill for Claude Code and Codex
+npx skills add vercel-labs/agent-skills -g -a claude-code -a codex -s vercel-react-best-practices
+
+# Install all skills from a repo
+npx skills add vercel-labs/agent-skills -g -a claude-code -a codex -s '*'
+
+# List what's in a repo before installing
+npx skills add vercel-labs/agent-skills --list
 ```
 
-**Common usage:**
-
-```bash
-# Install firecrawl skill only for Claude Code
-npx skills add firecrawl/cli -a claude-code
-
-# Install specific skill from a multi-skill repo
-npx skills add vercel-labs/agent-skills -s frontend-design -a claude-code
-
-# Install globally for Claude Code only
-npx skills add firecrawl/cli -a claude-code -g
-```
-
-## How Updates Work
-
-The CLI maintains `~/.agents/.skill-lock.json` with:
-
-```json
-{
-  "skill-name": {
-    "name": "skill-name",
-    "source": "owner/repo",
-    "skillFolderHash": "<GitHub tree SHA>"
-  }
-}
-```
-
-- `npx skills check` compares local hash to GitHub's current tree SHA
-- `npx skills update` pulls latest from source repos
-- No semantic versioning — tracks latest commit
+**Important:** the source argument must come right after `add`, before flags.
 
 ## Installation Methods
 
-**Symlink (default, recommended):**
+- **Symlink (default)** — Claude Code gets symlinks in `~/.claude/skills/` pointing to `~/.agents/skills/`
+- **Universal** — some agents (Codex) read from `~/.agents/skills/` natively
+- **Copy (`--copy`)** — independent copies per agent, must update each separately
 
-- Single source of truth
-- Updates propagate to all agents automatically
+## How Updates Work
 
-**Copy (`--copy` flag):**
+The CLI maintains `~/.agents/.skill-lock.json` tracking source repos and folder hashes.
 
-- Independent copies per agent
-- Must update each copy separately
+- `npx skills check` — compares local hash to GitHub's current tree SHA
+- `npx skills update` — pulls latest from source repos
+- No semantic versioning — tracks latest commit
 
-## Stow Conflict
+## Stow Integration (Resolved)
 
-This repo manages `~/.claude/` via GNU Stow symlinks. The skills CLI expects `~/.claude/skills/` to be a mutable directory it can write to.
+This repo manages `~/.claude/` via GNU Stow. To let custom skills and community skills coexist:
 
-**Options:**
+1. **Stow with `--no-folding`** — makes `~/.claude/skills/` a real directory (not a folder symlink)
+2. **Custom skills** — Stow creates individual symlinks for each file in each skill
+3. **Community skills** — `npx skills` creates symlinks to `~/.agents/skills/`
+4. **New custom skills require restow** — `stow -R --no-folding claude`
+5. **New community skills** — just run `npx skills add` with `-a claude-code`
 
-1. **Use project-local skills** (no `-g` flag) — keeps them out of Stow-managed directory
-2. **Install in this repo** — run `npx skills add <skill>` from repo root, commit result
-3. **Accept mixed management** — Stow for custom skills, CLI for ecosystem skills
-4. **Manual updates** — copy SKILL.md manually, no auto-updates
+## Tracking
 
-If using option 2 or 4, the lock file won't track the skill, so `npx skills check/update` won't work.
+Installed community skills are tracked in `skills/installed/` with date-prefixed pages. Use `npx skills list -g` for the live source of truth.

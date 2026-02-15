@@ -18,11 +18,7 @@
     "command": "input=$(cat); model=$(echo \"$input\" | jq -r '.model.display_name'); usage=$(echo \"$input\" | jq '.context_window.current_usage'); total_in=$(echo \"$input\" | jq '.context_window.total_input_tokens'); total_out=$(echo \"$input\" | jq '.context_window.total_output_tokens'); session_id=$(echo \"$input\" | jq -r '.session_id'); session_file=\"/tmp/claude-session-${session_id}\"; current_time=$(date +%s); if [ ! -f \"$session_file\" ]; then echo \"$current_time\" > \"$session_file\"; start_time=$current_time; else start_time=$(cat \"$session_file\"); fi; elapsed=$((current_time - start_time)); hours=$((elapsed / 3600)); minutes=$(((elapsed % 3600) / 60)); seconds=$((elapsed % 60)); if [ $hours -gt 0 ]; then time_str=$(printf '%dh%dm' \"$hours\" \"$minutes\"); elif [ $minutes -gt 0 ]; then time_str=$(printf '%dm%ds' \"$minutes\" \"$seconds\"); else time_str=$(printf '%ds' \"$seconds\"); fi; context_info=\"\"; if [ \"$usage\" != \"null\" ]; then current=$(echo \"$usage\" | jq '.input_tokens + .cache_creation_input_tokens + .cache_read_input_tokens'); ctx_k=$(awk \"BEGIN {printf \\\"%.0f\\\", $current / 1000}\"); context_info=$(printf '%dk' \"$ctx_k\"); fi; cost=\"\"; if [ \"$usage\" != \"null\" ]; then input_cost=$(awk \"BEGIN {printf \\\"%.4f\\\", ($total_in * 3.0 / 1000000)}\"); output_cost=$(awk \"BEGIN {printf \\\"%.4f\\\", ($total_out * 15.0 / 1000000)}\"); session_cost=$(awk \"BEGIN {printf \\\"%.2f\\\", $input_cost + $output_cost}\"); cost=$(printf '$%.2f' \"$session_cost\"); fi; tokens=\"\"; if [ \"$total_in\" != \"null\" ] && [ \"$total_out\" != \"null\" ] && [ $total_in -gt 0 ]; then in_k=$(awk \"BEGIN {printf \\\"%.0f\\\", $total_in / 1000}\"); out_k=$(awk \"BEGIN {printf \\\"%.0f\\\", $total_out / 1000}\"); tokens=$(printf '%dk/%dk' \"$in_k\" \"$out_k\"); fi; status=\"$model\"; [ -n \"$time_str\" ] && status=\"$status | $time_str\"; [ -n \"$tokens\" ] && status=\"$status | tok: $tokens\"; [ -n \"$context_info\" ] && status=\"$status | ctx: $context_info\"; [ -n \"$cost\" ] && status=\"$status | $cost\"; echo \"$status\""
   },
   "enabledPlugins": {
-    "elements-of-style@superpowers-marketplace": true,
-    "context7@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true,
-    "library-docs@sawyer-mart": true,
-    "compound-engineering@every-marketplace": true
+    "context7@claude-plugins-official": true
   },
   "sandbox": {
     "enabled": true,
